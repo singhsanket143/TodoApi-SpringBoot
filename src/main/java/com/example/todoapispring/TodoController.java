@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/todos")
 public class TodoController {
 
     private static List<Todo> todoList;
@@ -19,12 +20,12 @@ public class TodoController {
     }
 
 
-    @GetMapping("/todos")
+    @GetMapping
     public ResponseEntity<List<Todo>> getTodos() {
         return ResponseEntity.ok(todoList);
     }
 
-    @PostMapping("/todos")
+    @PostMapping
     public ResponseEntity<Todo> createTodo(@RequestBody Todo newTodo) {
 
         /**
@@ -33,6 +34,18 @@ public class TodoController {
          */
         todoList.add(newTodo);
         return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
+    }
+
+
+    @GetMapping("/{todoId}")
+    public ResponseEntity<Todo> getTodoById(@PathVariable Long todoId) {
+        for (Todo todo : todoList) {
+            if (todo.getId() == todoId) {
+                return ResponseEntity.ok(todo);
+            }
+        }
+        // HW: Along with 404 status code, try to send a json {message: Todo not found}
+        return ResponseEntity.notFound().build();
     }
 
 }
