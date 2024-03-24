@@ -12,6 +12,8 @@ import java.util.List;
 public class TodoController {
 
     private static List<Todo> todoList;
+    // Error message when the todo is not found
+    private static final String TODO_NOT_FOUND = "Todo not found";
 
     public TodoController() {
         todoList = new ArrayList<>();
@@ -38,14 +40,13 @@ public class TodoController {
 
 
     @GetMapping("/{todoId}")
-    public ResponseEntity<Todo> getTodoById(@PathVariable Long todoId) {
+    public ResponseEntity<?> getTodoById(@PathVariable Long todoId) {
         for (Todo todo : todoList) {
             if (todo.getId() == todoId) {
                 return ResponseEntity.ok(todo);
             }
         }
         // HW: Along with 404 status code, try to send a json {message: Todo not found}
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
     }
-
 }
