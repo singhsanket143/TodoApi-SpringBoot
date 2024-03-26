@@ -1,6 +1,5 @@
 package com.example.todoapispring;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,11 +53,51 @@ public class TodoController {
     @GetMapping("/{todoId}")
     public ResponseEntity<?> getTodoById(@PathVariable Long todoId) {
         for (Todo todo : todoList) {
-            if (todo.getId() == todoId) {
+            if (todo.getId().equals(todoId)) {
                 return ResponseEntity.ok(todo);
             }
         }
         // HW: Along with 404 status code, try to send a json {message: Todo not found}
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
+    }
+
+
+    @PatchMapping
+    public ResponseEntity<?> patchTodoApi(@RequestBody Todo incompleteTodo){
+
+        //RETRIEVE THE ASSOCIATED Todo THROUGH ITS ID
+        Todo existingTodo = null;
+
+        for(Todo todo:todoList){
+            if(todo.getId().equals(incompleteTodo.getId())){
+                existingTodo=todo;
+            }
+        }
+        if(existingTodo == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
+        }
+        //UPDATE ONLY THOSE FIELDS WHICH ARE NOT NULL IN THE INCOMPLETE Todo OBJECT
+        if(incompleteTodo.getTitle()!=null){
+            existingTodo.setTitle(incompleteTodo.getTitle());
+        }
+
+        if(incompleteTodo.getUserId()!=null){
+            existingTodo.setUserId(incompleteTodo.getUserId());
+        }
+        if(incompleteTodo.isCompleted()!=null){
+            existingTodo.setCompleted(incompleteTodo.isCompleted());
+        }
+        return ResponseEntity.ok(existingTodo);
+    }
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<?> deleteTodoById(@PathVariable Long todoId) {
+        for (Todo todo : todoList) {
+            if (todo.getId().equals(todoId)) {
+                todoList.remove(todo);
+                return ResponseEntity.ok(todo);
+            }
+        }
+        //  Along with 404 status code, try to send a json {message: Todo not found}
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
     }
 }
