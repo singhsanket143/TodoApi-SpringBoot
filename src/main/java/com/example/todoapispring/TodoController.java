@@ -1,6 +1,7 @@
 package com.example.todoapispring;
 
 import com.example.todoapispring.Model.ResponseModel;
+import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,6 @@ public class TodoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(newTodo);
     }
 
-
     @GetMapping("/{todoId}")
     public ResponseEntity<ResponseModel> getTodoById(@PathVariable Long todoId) {
         for (Todo todo : todoList) {
@@ -60,6 +60,31 @@ public class TodoController {
             }
         }
         // HW: Along with 404 status code, try to send a json {message: Todo not found}
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseModel(false,"todo not found"));
+    }
+
+    @PatchMapping("/{todoId}")
+    public ResponseEntity<ResponseModel> patchTodo(@PathVariable int todoId,@RequestBody Todo todo)
+    {
+        Todo getTodo = todoList.stream().filter(x-> x.getId() == todoId).findFirst().orElse(null);
+        if(getTodo == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseModel(false,"todo not found"));
+        else
+        {
+            getTodo.setCompleted(todo.isCompleted());
+            getTodo.setTitle(todo.getTitle());
+            getTodo.setUserId(todo.getUserId());
+            return ResponseEntity.ok(new ResponseModel(false,todo));
+        }
+    }
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<ResponseModel> deleteTodoById(@PathVariable int todoId) {
+        for (Todo todo : todoList) {
+            if (todo.getId() == todoId) {
+                todoList.remove(todo);
+                return ResponseEntity.ok(new ResponseModel(true, todo));
+            }
+        }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseModel(false,"todo not found"));
     }
 }
