@@ -35,7 +35,7 @@ public class TodoController {
 
     @GetMapping
     public ResponseEntity<List<Todo>> getTodos(@RequestParam(required = false) Boolean isCompleted) {
-        System.out.println("Incoming query params: " + isCompleted + " " + this.todoService.doSomething());
+        System.out.println("Incoming query params: " + isCompleted + " " + this.todoservice2.doSomething());
         return ResponseEntity.ok(todoList);
     }
 
