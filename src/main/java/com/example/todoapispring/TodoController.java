@@ -1,5 +1,6 @@
 package com.example.todoapispring;
 
+import com.example.todoapispring.Model.ResponseModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -52,13 +53,13 @@ public class TodoController {
 
 
     @GetMapping("/{todoId}")
-    public ResponseEntity<?> getTodoById(@PathVariable Long todoId) {
+    public ResponseEntity<ResponseModel> getTodoById(@PathVariable Long todoId) {
         for (Todo todo : todoList) {
             if (todo.getId() == todoId) {
-                return ResponseEntity.ok(todo);
+                return ResponseEntity.ok(new ResponseModel(true, todo));
             }
         }
         // HW: Along with 404 status code, try to send a json {message: Todo not found}
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseModel(false,"todo not found"));
     }
 }
