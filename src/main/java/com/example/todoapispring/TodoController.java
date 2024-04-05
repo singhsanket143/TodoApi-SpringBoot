@@ -61,4 +61,56 @@ public class TodoController {
         // HW: Along with 404 status code, try to send a json {message: Todo not found}
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
     }
+    /**
+     * Api to delete a Todo
+     * We can delete a particular todo by passing the id of the todo
+     * */
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<?> deleteTodoById(@PathVariable Long todoId){
+        Todo todoToRemove = null;
+        for(Todo todo: todoList){
+            if(todo.getId() == todoId){
+                todoToRemove = todo;
+                break;
+            }
+        }
+        if(todoToRemove != null){
+            todoList.remove(todoToRemove);
+            String deleteSuccessMessage = "Todo with id " + todoId + " deleted successfully";
+            return ResponseEntity.status(HttpStatus.OK).body(deleteSuccessMessage);
+
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
+        }
+    }
+
+    /**
+     * Api to update a Todo
+     * We can update a particular todo by passing the id of the todo
+     * @param todoId
+     * @RequestBody
+     * @return
+     * * */
+    @PatchMapping("/{todoId}")
+    public ResponseEntity<?> updateTodoById(@PathVariable Long todoId, @RequestBody Todo updatedTodo){
+        Todo todoToUpdate = null;
+        for(Todo todo: todoList){
+            if(todo.getId() == todoId){
+                todoToUpdate = todo;
+                break;
+            }
+        }
+        if(todoToUpdate != null){
+            if(updatedTodo.getTitle() != null) {
+                todoToUpdate.setTitle(updatedTodo.getTitle());
+            }
+            if(updatedTodo.getUserId() != 0) {
+                todoToUpdate.setUserId(updatedTodo.getUserId());
+            }
+            todoToUpdate.setCompleted(updatedTodo.isCompleted());
+            return ResponseEntity.ok(todoToUpdate);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
+        }
+    }
 }
