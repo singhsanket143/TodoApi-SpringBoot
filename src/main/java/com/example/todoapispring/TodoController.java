@@ -68,21 +68,13 @@ public class TodoController {
      */
     @DeleteMapping("/{todoId}")
     public ResponseEntity<?> deleteTodoById(@PathVariable Long todoId) {
-        Todo todoToRemove = null;
         for(Todo todo : todoList) {
             if(todo.getId() == todoId) {
-                todoToRemove = todo;
-                break;
+                todoList.remove(todo);
+                return ResponseEntity.status(HttpStatus.OK).body("Todo deleted successfully");
             }
         }
-
-        if(todoToRemove != null) {
-            todoList.remove(todoToRemove);
-            String deleteSuccessMessage = "Todo deleted successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(deleteSuccessMessage);
-        } else {
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
-        }
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
     }
 
     /**
@@ -96,19 +88,19 @@ public class TodoController {
     @PatchMapping("/{todoId}")
     ResponseEntity<?> updateTodoById(@PathVariable Long todoId, @RequestParam(required = false) String title, @RequestParam(required = false) Boolean isCompleted, Integer userId) {
         for(Todo todo : todoList) {
-            if(todo.getId() == todoId) {
-                if(title != null) {
-                    todo.setTitle(title);
-                }
-                if(isCompleted != null) {
-                    todo.setCompleted(isCompleted);
-                }
-                if(userId != null) {
-                    todo.setUserId(userId);
-                }
-
-                return ResponseEntity.ok(todo);
+            if(todo.getId() != todoId) continue;
+            
+            if(title != null) {
+                todo.setTitle(title);
             }
+            if(isCompleted != null) {
+                todo.setCompleted(isCompleted);
+            }
+            if(userId != null) {
+                todo.setUserId(userId);
+            }
+
+            return ResponseEntity.ok(todo);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TODO_NOT_FOUND);
     }
